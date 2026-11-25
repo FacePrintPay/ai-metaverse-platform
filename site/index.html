@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Metaverse</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#0b0d2a;color:#fff;padding:16px;max-width:900px;margin:auto}
+h1{color:#0ff;text-align:center;margin:12px 0}
+h2{color:#0ff;margin:20px 0 10px}
+.card{background:#ffffff14;border:1px solid #ffffff30;border-radius:14px;padding:16px;margin-bottom:16px}
+#frame{width:160px;height:160px;border-radius:50%;border:4px solid #0ff;margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:70px;background:#667eea}
+#frame img{width:100%;height:100%;object-fit:cover}
+label{display:block;margin:10px 0 4px;font-weight:600}
+input,select,textarea{width:100%;padding:10px;border-radius:8px;border:0;font-size:16px}
+button{background:#0ff;color:#000;border:0;border-radius:8px;padding:10px 16px;font-weight:700;margin-top:10px;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.planet{cursor:pointer;text-align:center}
+.planet .ic{font-size:40px}
+.planet small{color:#9f9}
+#log{height:220px;overflow-y:auto;margin-bottom:10px}
+.m{padding:8px 10px;border-radius:8px;margin-bottom:6px;background:#ffffff14}
+.m.u{background:#0ff3}
+.row{display:flex;gap:8px}.row input{flex:1}
+</style></head><body>
+<h1>🌌 AI METAVERSE</h1>
+
+<div class="card">
+  <h2>🎭 Your Avatar</h2>
+  <div id="frame">👤</div>
+  <div style="text-align:center"><button onclick="document.getElementById('up').click()">📸 Upload Photo</button></div>
+  <input type="file" id="up" accept="image/*" hidden>
+  <label>Name</label><input id="name" value="Commander">
+  <label>Birth date</label><input id="bd" type="date">
+  <label>Personality</label>
+  <select id="pers"><option>Friendly</option><option>Professional</option><option>Creative</option><option>Technical</option></select>
+  <label>Voice traits</label><textarea id="voice" rows="2">Clear, confident, enthusiastic</textarea>
+  <button onclick="saveAvatar()">✨ Save Avatar</button>
+  <p id="sum" style="margin-top:10px;color:#9f9"></p>
+</div>
+
+<h2>🪐 Planetary Assistants</h2>
+<div class="grid" id="grid"></div>
+
+<div class="card" style="margin-top:16px">
+  <h2>💬 Chat</h2>
+  <div id="log"></div>
+  <div class="row"><input id="msg" placeholder="Ask an assistant..."><button onclick="send()">Send</button></div>
+</div>
+
+<script>
+var P={Earth:["🌍","Foundational code structures"],Mars:["🔴","Data analysis and visualization"],
+Venus:["🪐","Natural language processing"],Jupiter:["🟠","API integration"],
+Saturn:["🪐","Computer vision and image generation"],Neptune:["🔵","Documentation"],
+Mercury:["☿️","Testing and validation"],Uranus:["💠","Blockchain and Web3"]};
+var av={name:"Commander",img:"",bd:"",pers:"Friendly",voice:""};
+function $(i){return document.getElementById(i)}
+function store(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function load(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function say(who,t,cls){var d=document.createElement("div");d.className="m "+(cls||"");
+  var b=document.createElement("b");b.textContent=who+": ";d.appendChild(b);
+  d.appendChild(document.createTextNode(t));$("log").appendChild(d);$("log").scrollTop=1e9}
+function showImg(src){var f=$("frame");f.textContent="";var i=document.createElement("img");i.src=src;f.appendChild(i)}
+$("up").onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();
+  r.onload=function(){av.img=r.result;showImg(av.img);store("avatar",JSON.stringify(av))};r.readAsDataURL(f)};
+function saveAvatar(){av.name=$("name").value||"Commander";av.bd=$("bd").value;av.pers=$("pers").value;av.voice=$("voice").value;
+  store("avatar",JSON.stringify(av));$("sum").textContent="Saved: "+av.name+" ("+av.pers+")";say("System","Avatar saved: "+av.name)}
+Object.keys(P).forEach(function(n){var d=document.createElement("div");d.className="card planet";
+  d.innerHTML='<div class="ic">'+P[n][0]+'</div><b>'+n+'</b><div>'+P[n][1]+'</div><small>● READY</small>';
+  d.onclick=function(){say(n,"Ready: "+P[n][1],"")};$("grid").appendChild(d)});
+function send(){var t=$("msg").value.trim();if(!t)return;say(av.name,t,"u");$("msg").value="";
+  var l=t.toLowerCase(),hit=Object.keys(P).filter(function(n){return l.indexOf(n.toLowerCase())>-1})[0]||"System";
+  setTimeout(function(){say(hit,"Received. This is a demo reply; no live AI backend is connected yet.")},400)}
+$("msg").onkeydown=function(e){if(e.key==="Enter")send()};
+var s=load("avatar");if(s){try{av=JSON.parse(s);$("name").value=av.name;$("bd").value=av.bd;$("pers").value=av.pers;$("voice").value=av.voice;if(av.img)showImg(av.img)}catch(e){}}
+say("System","Welcome to the AI Metaverse.");
+</script></body></html>
